@@ -80,6 +80,11 @@ extern void loganFlush(void);
 extern void loganPrintClibLog(BOOL b);
 
 /**
+ 清除本地相应日期日志
+ */
+extern void loganClearDateLog(NSString *date);
+
+/**
  清除本地所有日志
  */
 extern void loganClearAllLogs(void);
