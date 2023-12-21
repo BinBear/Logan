@@ -53,6 +53,7 @@ uint32_t __max_reversed_date;
 
 - (void)writeLog:(NSString *)log logType:(NSUInteger)type;
 - (void)clearLogs;
+- (void)clearLog:(NSString *)date;
 + (NSDictionary *)allFilesInfo;
 + (NSString *)currentDate;
 - (void)flush;
@@ -86,6 +87,10 @@ void loganUseASL(BOOL b) {
 
 void loganPrintClibLog(BOOL b) {
     clogan_debug(!!b);
+}
+
+void loganClearDateLog(NSString *date) {
+    [[Logan logan] clearLog:date];
 }
 
 void loganClearAllLogs(void) {
@@ -202,6 +207,17 @@ NSString *_Nonnull loganTodaysDate(void) {
             NSString *path = [[Logan loganLogDirectory] stringByAppendingPathComponent:name];
             ret = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
         }
+    });
+}
+
+- (void)clearLog:(NSString *)date {
+    if (date.length == 0) {
+        return;
+    }
+    dispatch_async(self.loganQueue, ^{
+        NSError *error = nil;
+        NSString *path = [[Logan loganLogDirectory] stringByAppendingPathComponent:date];
+        BOOL ret = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     });
 }
 
@@ -414,7 +430,7 @@ NSString *_Nonnull loganTodaysDate(void) {
 		}
 		NSString *bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 		if (bundleVersion.length > 0) {
-			[req addValue:bundleVersion forHTTPHeaderField:@"bundleVersion"];
+			[req addValue:bundleVersion forHTTPHeaderField:@"buildVersion"];
 		}
 		
 		if(deviceId.length >0){
